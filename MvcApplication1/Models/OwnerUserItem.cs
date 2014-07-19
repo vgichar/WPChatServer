@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -19,11 +20,11 @@ namespace MvcApplication1.Models
 
         public StatusIndicator Status { get; set; }
 
-        public List<UserItem> Friends { get; set; }
+        public virtual List<OwnerUserItem> Friends { get; set; }
 
-        public List<RoomItem> Rooms { get; set; }
+        public virtual List<RoomItem> Rooms { get; set; }
 
-        public List<MessageItem> Messages { get; set; }
+        public virtual List<MessageItem> Messages { get; set; }
 
         public string ConnectionId { get; set; }
     }

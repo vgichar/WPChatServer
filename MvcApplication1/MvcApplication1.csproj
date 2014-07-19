@@ -193,7 +193,6 @@
     <Compile Include="Models\RoomItem.cs" />
     <Compile Include="Models\RoomItemContext.cs" />
     <Compile Include="Models\StatusIndicator.cs" />
-    <Compile Include="Models\UserItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartUp.cs" />
   </ItemGroup>

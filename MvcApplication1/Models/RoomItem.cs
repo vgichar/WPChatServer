@@ -14,8 +14,8 @@ namespace MvcApplication1.Models
         [Key]
         public string Name { get; set; }
 
-        public List<UserItem> Users { get; set; }
+        public virtual List<OwnerUserItem> Users { get; set; }
 
-        public List<MessageItem> Messages { get; set; }
+        public virtual List<MessageItem> Messages { get; set; }
     }
 }

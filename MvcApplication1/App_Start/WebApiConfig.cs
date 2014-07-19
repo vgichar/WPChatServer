@@ -16,7 +16,7 @@ namespace MvcApplication1
             );
 
             var json = config.Formatters.JsonFormatter;
-            json.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects;
+            json.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.All;
 
             config.Formatters.Remove(config.Formatters.XmlFormatter);
 
