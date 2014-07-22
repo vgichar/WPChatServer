@@ -8,9 +8,9 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
-using MvcApplication1.Models;
+using WPChatServer.Models;
 
-namespace MvcApplication1.Controllers
+namespace WPChatServer.Controllers
 {
     public class RoomItemController : ApiController
     {

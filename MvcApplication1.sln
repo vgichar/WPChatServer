@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcApplication1", "MvcApplication1\MvcApplication1.csproj", "{5AB3C3D0-2138-446E-BDEE-390E4A00383D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPChatServer", "MvcApplication1\WPChatServer.csproj", "{5AB3C3D0-2138-446E-BDEE-390E4A00383D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace MvcApplication1.Models
+namespace WPChatServer.Models
 {
     public class Initializer<T> : DropCreateDatabaseIfModelChanges<T> where T : DbContext
     {

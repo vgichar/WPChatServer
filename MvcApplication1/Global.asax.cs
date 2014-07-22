@@ -1,4 +1,4 @@
-﻿using MvcApplication1.Models;
+﻿using WPChatServer.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -8,8 +8,9 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using MvcApplication1.Models;
 
-namespace MvcApplication1
+namespace WPChatServer
 {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
     // visit http://go.microsoft.com/?LinkId=9394801
@@ -27,6 +28,7 @@ namespace MvcApplication1
 
             Database.SetInitializer(new Initializer<OwnerUserItemContext>());
             Database.SetInitializer(new Initializer<RoomItemContext>());
+            Database.SetInitializer(new Initializer<MessageItemContext>());
         }
     }
 }

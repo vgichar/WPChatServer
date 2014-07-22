@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
 
-namespace MvcApplication1.Models
+namespace WPChatServer.Models
 {
     public class RoomItemContext : DbContext
     {
@@ -11,7 +11,7 @@ namespace MvcApplication1.Models
         // code to the Application_Start method in your Global.asax file.
         // Note: this will destroy and re-create your database with every model change.
         // 
-        // System.Data.Entity.Database.SetInitializer(new System.Data.Entity.DropCreateDatabaseIfModelChanges<MvcApplication1.Models.RoomItemContext>());
+        // System.Data.Entity.Database.SetInitializer(new System.Data.Entity.DropCreateDatabaseIfModelChanges<WPChatServer.Models.RoomItemContext>());
 
         public RoomItemContext() : base("name=RoomItemContext")
         {

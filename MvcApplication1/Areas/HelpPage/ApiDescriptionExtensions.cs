@@ -3,7 +3,7 @@ using System.Text;
 using System.Web;
 using System.Web.Http.Description;
 
-namespace MvcApplication1.Areas.HelpPage
+namespace WPChatServer.Areas.HelpPage
 {
     public static class ApiDescriptionExtensions
     {

@@ -1,4 +1,4 @@
-namespace MvcApplication1.Areas.HelpPage
+namespace WPChatServer.Areas.HelpPage
 {
     /// <summary>
     /// Indicates whether the sample is used for request or response

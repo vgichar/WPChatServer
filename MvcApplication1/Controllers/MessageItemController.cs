@@ -9,45 +9,46 @@ using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using WPChatServer.Models;
+using MvcApplication1.Models;
 
-namespace WPChatServer.Controllers
+namespace MvcApplication1.Controllers
 {
-    public class OwnerUserItemController : ApiController
+    public class MessageItemController : ApiController
     {
-        private OwnerUserItemContext db = new OwnerUserItemContext();
+        private MessageItemContext db = new MessageItemContext();
 
-        // GET api/OwnerUserItem
-        public IEnumerable<OwnerUserItem> GetOwnerUserItems()
+        // GET api/MessageItem
+        public IEnumerable<MessageItem> GetMessageItems()
         {
-            return db.OwnerUserItems.AsEnumerable();
+            return db.MessageItems.AsEnumerable();
         }
 
-        // GET api/OwnerUserItem/5
-        public OwnerUserItem GetOwnerUserItem(string id)
+        // GET api/MessageItem/5
+        public MessageItem GetMessageItem(int id)
         {
-            OwnerUserItem owneruseritem = db.OwnerUserItems.Find(id);
-            if (owneruseritem == null)
+            MessageItem messageitem = db.MessageItems.Find(id);
+            if (messageitem == null)
             {
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.NotFound));
             }
 
-            return owneruseritem;
+            return messageitem;
         }
 
-        // PUT api/OwnerUserItem/5
-        public HttpResponseMessage PutOwnerUserItem(string id, OwnerUserItem owneruseritem)
+        // PUT api/MessageItem/5
+        public HttpResponseMessage PutMessageItem(int id, MessageItem messageitem)
         {
             if (!ModelState.IsValid)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
 
-            if (id != owneruseritem.Username)
+            if (id != messageitem.Id)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            db.Entry(owneruseritem).State = EntityState.Modified;
+            db.Entry(messageitem).State = EntityState.Modified;
 
             try
             {
@@ -61,16 +62,16 @@ namespace WPChatServer.Controllers
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
-        // POST api/OwnerUserItem
-        public HttpResponseMessage PostOwnerUserItem(OwnerUserItem owneruseritem)
+        // POST api/MessageItem
+        public HttpResponseMessage PostMessageItem(MessageItem messageitem)
         {
             if (ModelState.IsValid)
             {
-                db.OwnerUserItems.Add(owneruseritem);
+                db.MessageItems.Add(messageitem);
                 db.SaveChanges();
 
-                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created, owneruseritem);
-                response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = owneruseritem.Username }));
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.Created, messageitem);
+                response.Headers.Location = new Uri(Url.Link("DefaultApi", new { id = messageitem.Id }));
                 return response;
             }
             else
@@ -79,16 +80,16 @@ namespace WPChatServer.Controllers
             }
         }
 
-        // DELETE api/OwnerUserItem/5
-        public HttpResponseMessage DeleteOwnerUserItem(string id)
+        // DELETE api/MessageItem/5
+        public HttpResponseMessage DeleteMessageItem(int id)
         {
-            OwnerUserItem owneruseritem = db.OwnerUserItems.Find(id);
-            if (owneruseritem == null)
+            MessageItem messageitem = db.MessageItems.Find(id);
+            if (messageitem == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
             }
 
-            db.OwnerUserItems.Remove(owneruseritem);
+            db.MessageItems.Remove(messageitem);
 
             try
             {
@@ -99,7 +100,7 @@ namespace WPChatServer.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.NotFound, ex);
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, owneruseritem);
+            return Request.CreateResponse(HttpStatusCode.OK, messageitem);
         }
 
         protected override void Dispose(bool disposing)

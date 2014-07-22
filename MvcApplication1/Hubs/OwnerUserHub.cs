@@ -1,21 +1,19 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-using MvcApplication1.Models;
+using WPChatServer.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
-namespace MvcApplication1.Hubs
+namespace WPChatServer.Hubs
 {
     [HubName("OwnerUserHub")]
     public class OwnerUserHub : Hub
     {
         private OwnerUserItemContext OwnerUserItemDatabase = new OwnerUserItemContext();
         private RoomItemContext RoomItemDatabase = new RoomItemContext();
-
-        private OwnerUserItem User = null;
 
         // Invoke Client-side Code
 
@@ -29,85 +27,6 @@ namespace MvcApplication1.Hubs
                     Clients.Client(friend.ConnectionId).FriendStatusChanged(username, status);
                 }
             }
-        }
-
-        private void onUserStatus()
-        {
-            Clients.Caller.onUserStatus(User.Status);
-        }
-
-        private void onUserFriends()
-        {
-            List<OwnerUserItem> result = new List<OwnerUserItem>();
-            foreach (OwnerUserItem oui in User.Friends) {
-                result.Add(new OwnerUserItem()
-                {
-                    Username = oui.Username,
-                    Status = oui.Status,
-                });
-            }
-            Clients.Caller.onUserFriends(result);
-        }
-
-        private void onFriendsRooms(OwnerUserItem friend)
-        {
-            List<RoomItem> rooms = new List<RoomItem>();
-            foreach (RoomItem ri in friend.Rooms)
-            {
-                rooms.Add(new RoomItem()
-                {
-                    Name = ri.Name
-                });
-            }
-            Clients.Caller.onFriendsRooms(friend.Username, rooms);
-        }
-
-        private void onUserRooms()
-        {
-            List<RoomItem> result = new List<RoomItem>();
-            foreach (RoomItem ri in User.Rooms)
-            {
-                result.Add(new RoomItem()
-                {
-                    Name = ri.Name,
-                    Messages = ri.Messages,
-                    Users = new List<OwnerUserItem>(ri.Users.Count)
-                });
-            }
-            Clients.Caller.onUserRooms(result);
-        }
-
-        private void onRoomsUsers(RoomItem room)
-        {
-            List<OwnerUserItem> users = new List<OwnerUserItem>();
-            foreach (OwnerUserItem ui in room.Users)
-            {
-                users.Add(new OwnerUserItem()
-                {
-                    Username = ui.Username,
-                    Status = ui.Status,
-                    Rooms = new List<RoomItem>(ui.Rooms.Capacity),
-                    Messages = new List<MessageItem>();
-                });
-            }
-            Clients.Caller.onFriendsRooms(room.Name, users);
-        }
-
-        private void onUserMessages()
-        {
-            List<MessageItem> result = new List<MessageItem>();
-            foreach (MessageItem mi in User.Messages)
-            {
-                result.Add(new MessageItem()
-                {
-                    From = mi.From,
-                    To = mi.To,
-                    Text = mi.Text,
-                    Type = mi.Type,
-                    Link = mi.Link
-                });
-            }
-            Clients.Caller.onUserMessages(result);
         }
 
         // Server-side code
@@ -132,12 +51,12 @@ namespace MvcApplication1.Hubs
             return false;
         }
 
-        public bool Login(string username, string password)
+        public OwnerUserItem Login(string username, string password)
         {
             OwnerUserItem oui = OwnerUserItemDatabase.OwnerUserItems.Find(username);
             if (oui == null || oui.Password != password)
             {
-                return false;
+                return null;
             }
             oui.ConnectionId = this.Context.ConnectionId;
             oui.IsLoggedIn = true;
@@ -146,45 +65,102 @@ namespace MvcApplication1.Hubs
 
             OwnerUserItemDatabase.SaveChanges();
 
-            User = oui;
+            List<RoomItem> rooms = new List<RoomItem>();
+            List<OwnerUserItem> friends = new List<OwnerUserItem>();
 
-            onUserStatus();
-            onUserFriends();
-            onUserRooms();
-            onUserMessages();
+            oui.Rooms.ForEach(x => {
+                List<OwnerUserItem> users = new List<OwnerUserItem>();
+                
+                x.Users.ForEach(y =>
+                {
+                    users.Add(new OwnerUserItem()
+                    {
+                        Username = y.Username
+                    });
+                });
 
-            return true;
+                rooms.Add(new RoomItem() {
+                    Name = x.Name,
+                    Messages = x.Messages,
+                    Users = users
+                });
+            });
+
+            oui.Friends.ForEach(x =>
+            {
+                List<RoomItem> r = new List<RoomItem>();
+                List<MessageItem> m = new List<MessageItem>();
+
+                x.Rooms.ForEach(y =>
+                {
+                    r.Add(new RoomItem() {
+                        Name = y.Name
+                    });
+                });
+
+                oui.Messages.ForEach(y =>
+                {
+                    string friendName = y.From;
+                    if (y.From == oui.Username)
+                    {
+                        friendName = y.To;
+                    }
+
+                    if (friendName == x.Username)
+                    {
+                        m.Add(y);
+                    }
+                });
+
+                friends.Add(new OwnerUserItem() {
+                    Username = x.Username,
+                    Status = x.Status,
+                    Rooms = r
+                });
+            });
+
+            return new OwnerUserItem() {
+                Username = username,
+                Password = password,
+                IsLoggedIn = true,
+                Status = oui.Status,
+                Rooms = rooms,
+                Friends = friends
+            };
         }
 
-        public bool Logout()
+        public bool Logout(string username)
         {
-            if (User == null)
+            OwnerUserItem oui = OwnerUserItemDatabase.OwnerUserItems.Find(username);
+            if (oui == null)
             {
                 return false;
             }
-            User.IsLoggedIn = false;
+            oui.IsLoggedIn = false;
 
-            this.NotifyChangeStatus(User.Username, StatusIndicator.Offline);
+            this.NotifyChangeStatus(oui.Username, StatusIndicator.Offline);
 
             OwnerUserItemDatabase.SaveChanges();
             return true;
         }
 
-        public void ChangeStatus(StatusIndicator status)
+        public void ChangeStatus(string username, StatusIndicator status)
         {
-            if (User != null)
+            OwnerUserItem oui = OwnerUserItemDatabase.OwnerUserItems.Find(username);
+            if (oui != null)
             {
-                User.Status = status;
+                oui.Status = status;
 
-                this.NotifyChangeStatus(User.Username, status);
+                this.NotifyChangeStatus(oui.Username, status);
 
                 OwnerUserItemDatabase.SaveChanges();
             }
         }
 
-        public bool CreateRoom(string name)
+        public bool CreateRoom(string username, string name)
         {
-            if (User != null && RoomItemDatabase.RoomItems.Find(name) == null)
+            OwnerUserItem oui = OwnerUserItemDatabase.OwnerUserItems.Find(username);
+            if (oui != null && RoomItemDatabase.RoomItems.Find(name) == null)
             {
                 RoomItem ri = new RoomItem()
                 {
@@ -196,13 +172,33 @@ namespace MvcApplication1.Hubs
                 RoomItemDatabase.RoomItems.Add(ri);
                 RoomItemDatabase.SaveChanges();
 
-                User.Rooms.Add(ri);
-
+                oui.Rooms.Add(ri);
                 OwnerUserItemDatabase.SaveChanges();
+
+                RoomItemDatabase.RoomItems.Find(name).Users.Add(oui);
+                RoomItemDatabase.SaveChanges();
 
                 return true;
             }
             return false;
+        }
+
+        public void SendMessage(MessageItem mi) {
+            if (mi.Type == DataContextType.User) {
+                Clients.Client(OwnerUserItemDatabase.OwnerUserItems.Find(mi.To).ConnectionId).ReceiveMessage(mi);
+            }
+            else
+            {
+                RoomItem ri = RoomItemDatabase.RoomItems.Find(mi.To);
+
+                Debug.WriteLine(ri.Name);
+
+                ri.Users.ForEach(x =>
+                {
+                    Debug.WriteLine(x.Username);
+                    Clients.Client(x.ConnectionId).ReceiveMessage(mi);
+                });
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MvcApplication1.Models
+namespace WPChatServer.Models
 {
     public class MessageItem
     {
@@ -21,7 +21,5 @@ namespace MvcApplication1.Models
         public string To { get; set; }
 
         public string Text { get; set; }
-
-        public object Link { get; set; }
     }
 }

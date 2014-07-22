@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartup(typeof(MvcApplication1.Startup))]
+[assembly: OwinStartup(typeof(WPChatServer.Startup))]
 
-namespace MvcApplication1
+namespace WPChatServer
 {
     public class Startup
     {

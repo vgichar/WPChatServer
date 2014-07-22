@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 using System.Web.Http.Description;
 
-namespace MvcApplication1.Areas.HelpPage.Models
+namespace WPChatServer.Areas.HelpPage.Models
 {
     /// <summary>
     /// The model that represents an API displayed on the help page.

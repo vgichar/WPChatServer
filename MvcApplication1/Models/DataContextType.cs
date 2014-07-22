@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MvcApplication1.Models
+namespace WPChatServer.Models
 {
     public enum DataContextType
     {

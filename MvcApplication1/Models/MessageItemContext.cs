@@ -1,8 +1,9 @@
 ﻿using System.Data.Entity;
+using WPChatServer.Models;
 
-namespace WPChatServer.Models
+namespace MvcApplication1.Models
 {
-    public class OwnerUserItemContext : DbContext
+    public class MessageItemContext : DbContext
     {
         // You can add custom code to this file. Changes will not be overwritten.
         // 
@@ -11,12 +12,12 @@ namespace WPChatServer.Models
         // code to the Application_Start method in your Global.asax file.
         // Note: this will destroy and re-create your database with every model change.
         // 
-        // System.Data.Entity.Database.SetInitializer(new System.Data.Entity.DropCreateDatabaseIfModelChanges<WPChatServer.Models.OwnerUserItemContext>());
+        // System.Data.Entity.Database.SetInitializer(new System.Data.Entity.DropCreateDatabaseIfModelChanges<MvcApplication1.Models.MessageItemContext>());
 
-        public OwnerUserItemContext() : base("name=OwnerUserItemContext")
+        public MessageItemContext() : base("name=MessageItemContext")
         {
         }
 
-        public DbSet<OwnerUserItem> OwnerUserItems { get; set; }
+        public DbSet<MessageItem> MessageItems { get; set; }
     }
 }
