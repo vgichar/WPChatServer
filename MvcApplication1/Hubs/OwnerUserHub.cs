@@ -43,7 +43,8 @@ namespace WPChatServer.Hubs
                     Status = StatusIndicator.Online,
                     Friends = new List<OwnerUserItem>(),
                     Rooms = new List<RoomItem>(),
-                    Messages = new List<MessageItem>()
+                    Messages = new List<MessageItem>(),
+                    FavouriteRooms = new List<RoomItem>()
                 });
                 OwnerUserItemDatabase.SaveChanges();
                 return true;
@@ -67,6 +68,27 @@ namespace WPChatServer.Hubs
 
             List<RoomItem> rooms = new List<RoomItem>();
             List<OwnerUserItem> friends = new List<OwnerUserItem>();
+            List<RoomItem> favouriterooms = new List<RoomItem>();
+
+            oui.FavouriteRooms.ForEach(x =>
+            {
+                List<OwnerUserItem> users = new List<OwnerUserItem>();
+
+                x.Users.ForEach(y =>
+                {
+                    users.Add(new OwnerUserItem()
+                    {
+                        Username = y.Username
+                    });
+                });
+
+                favouriterooms.Add(new RoomItem()
+                {
+                    Name = x.Name,
+                    Messages = x.Messages,
+                    Users = users
+                });
+            });
 
             oui.Rooms.ForEach(x => {
                 List<OwnerUserItem> users = new List<OwnerUserItem>();
@@ -125,7 +147,8 @@ namespace WPChatServer.Hubs
                 IsLoggedIn = true,
                 Status = oui.Status,
                 Rooms = rooms,
-                Friends = friends
+                Friends = friends,
+                FavouriteRooms = favouriterooms
             };
         }
 
@@ -200,5 +223,26 @@ namespace WPChatServer.Hubs
                 });
             }
         }
+
+        public void AddRoom(string username ,string name)
+        {
+            OwnerUserItem oui = OwnerUserItemDatabase.OwnerUserItems.Find(username);
+            RoomItem ri = RoomItemDatabase.RoomItems.Find(name);
+            if (oui != null && ri != null)
+            {
+                oui.FavouriteRooms.Add(ri);
+                OwnerUserItemDatabase.SaveChanges();
+            }
+        }
+
+        public void AddFriend(string username, string friend)
+        {
+            OwnerUserItem oui = OwnerUserItemDatabase.OwnerUserItems.Find(username);
+            OwnerUserItem friend_oui = OwnerUserItemDatabase.OwnerUserItems.Find(friend);
+
+            oui.Friends.Add(friend_oui);
+            OwnerUserItemDatabase.SaveChanges();
+        }
+
     }
 }
