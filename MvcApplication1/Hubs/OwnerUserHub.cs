@@ -244,5 +244,47 @@ namespace WPChatServer.Hubs
             OwnerUserItemDatabase.SaveChanges();
         }
 
+
+        public List<RoomItem> GetRoomsByNameStart(string name)
+        {
+            List<RoomItem> tmp_rooms = new List<RoomItem>();
+            RoomItemDatabase.RoomItems.ToList().ForEach(x =>
+            {
+                if (x.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    tmp_rooms.Add(x);
+                }
+            });
+
+            return tmp_rooms;
+        }
+
+        public List<OwnerUserItem> GetUsersByNameStart(string name)
+        {
+            List<OwnerUserItem> tmp_users = new List<OwnerUserItem>();
+            OwnerUserItemDatabase.OwnerUserItems.ToList().ForEach(x =>
+            {
+                if (x.Username.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    tmp_users.Add(x);
+                }
+            });
+
+            return tmp_users;
+        }
+
+        public RoomItem GetRoomByName(string name)
+        {
+            RoomItem room = RoomItemDatabase.RoomItems.Find(name);
+
+            return room;
+        }
+
+        public OwnerUserItem GetUserByName(string name)
+        {
+            OwnerUserItem user = OwnerUserItemDatabase.OwnerUserItems.Find(name);
+
+            return user;
+        }
     }
 }
