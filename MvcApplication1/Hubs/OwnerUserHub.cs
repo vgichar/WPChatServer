@@ -43,7 +43,8 @@ namespace WPChatServer.Hubs
                     Status = StatusIndicator.Online,
                     Friends = new List<OwnerUserItem>(),
                     Rooms = new List<RoomItem>(),
-                    Messages = new List<MessageItem>()
+                    Messages = new List<MessageItem>(),
+                    ConnectionId = this.Context.ConnectionId
                 });
                 OwnerUserItemDatabase.SaveChanges();
                 return true;
