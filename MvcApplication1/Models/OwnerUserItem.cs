@@ -27,5 +27,7 @@ namespace WPChatServer.Models
         public virtual List<MessageItem> Messages { get; set; }
 
         public string ConnectionId { get; set; }
+
+        public virtual List<RoomItem> FavouriteRooms { get; set; }
     }
 }
