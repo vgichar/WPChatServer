@@ -14,7 +14,6 @@ C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcAppl
 C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\Microsoft.Owin.Host.SystemWeb.dll
 C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\Microsoft.Owin.Security.dll
 C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\Microsoft.Web.Infrastructure.dll
-C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
 C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\Newtonsoft.Json.dll
 C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\Owin.dll
 C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\System.Net.Http.Formatting.dll
@@ -162,3 +161,8 @@ C:\korisnicki_winPhone\WPChatServer\MvcApplication1\bin\zh-Hant\System.Spatial.r
 C:\korisnicki_winPhone\WPChatServer\MvcApplication1\obj\Debug\WPChatServer.csprojResolveAssemblyReference.cache
 C:\korisnicki_winPhone\WPChatServer\MvcApplication1\obj\Debug\MvcApplication1.dll
 C:\korisnicki_winPhone\WPChatServer\MvcApplication1\obj\Debug\MvcApplication1.pdb
+C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\EntityFramework.SqlServer.dll
+C:\Users\vojda_000\documents\visual studio 2013\Projects\MvcApplication1\MvcApplication1\bin\EntityFramework.SqlServer.xml
+C:\Users\vojda_000\Documents\Visual Studio 2013\Projects\MvcApplication1\MvcApplication1\bin\Antlr3.Runtime.pdb
+C:\Users\vojda_000\Documents\Visual Studio 2013\Projects\MvcApplication1\MvcApplication1\bin\System.Web.Optimization.xml
+C:\Users\vojda_000\Documents\Visual Studio 2013\Projects\MvcApplication1\MvcApplication1\bin\System.Web.Providers.xml

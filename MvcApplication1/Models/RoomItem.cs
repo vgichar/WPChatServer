@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MvcApplication1.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,9 +14,5 @@ namespace WPChatServer.Models
     {
         [Key]
         public string Name { get; set; }
-
-        public virtual List<OwnerUserItem> Users { get; set; }
-
-        public virtual List<MessageItem> Messages { get; set; }
     }
 }
