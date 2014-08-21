@@ -15,13 +15,13 @@ namespace WPChatServer.Hubs
     {
         private OwnerUserItemContext OwnerUserItemDatabase = new OwnerUserItemContext();
         private RoomItemContext RoomItemDatabase = new RoomItemContext();
-        private UserRoomContext UserRoomDatabase = new UserRoomContext();
+        private UserRoomItemContext UserRoomDatabase = new UserRoomItemContext();
         private MessageItemContext MessageItemDatabase = new MessageItemContext();
         private OwnerUserItem caller
         {
             get
             {
-                return OwnerUserItemDatabase.OwnerUserItems.First(x => x.ConnectionId == this.Context.ConnectionId);
+                return OwnerUserItemDatabase.OwnerUserItems.FirstOrDefault(x => x.ConnectionId == this.Context.ConnectionId);
             }
         }
 
@@ -76,7 +76,7 @@ namespace WPChatServer.Hubs
             List<object> rooms = new List<object>();
             List<object> friends = new List<object>();
 
-            foreach (string roomName in UserRoomDatabase.User_Room.Where(x => x.UserId == oui.Username).Select(x => x.RoomId))
+            foreach (string roomName in UserRoomDatabase.UserRoomItems.Where(x => x.UserId == oui.Username).Select(x => x.RoomId))
             {
                 rooms.Add(GetRoomByName(roomName));
             }
@@ -137,7 +137,7 @@ namespace WPChatServer.Hubs
                 RoomItemDatabase.RoomItems.Add(ri);
                 RoomItemDatabase.SaveChanges();
 
-                UserRoomDatabase.User_Room.Add(new UserRoomItem()
+                UserRoomDatabase.UserRoomItems.Add(new UserRoomItem()
                 {
                     UserId = caller.Username,
                     RoomId = ri.Name
@@ -161,7 +161,7 @@ namespace WPChatServer.Hubs
             }
             else
             {
-                var li = UserRoomDatabase.User_Room.Where<UserRoomItem>(x => x.RoomId == mi.To);
+                var li = UserRoomDatabase.UserRoomItems.Where<UserRoomItem>(x => x.RoomId == mi.To);
 
                 foreach (var x in li)
                 {
@@ -189,7 +189,7 @@ namespace WPChatServer.Hubs
             RoomItem ri = RoomItemDatabase.RoomItems.Find(name);
             if (caller != null && ri != null)
             {
-                UserRoomDatabase.User_Room.Add(new UserRoomItem()
+                UserRoomDatabase.UserRoomItems.Add(new UserRoomItem()
                 {
                     UserId = caller.Username,
                     RoomId = ri.Name
@@ -209,17 +209,24 @@ namespace WPChatServer.Hubs
             }
         }
 
-        public void RemoveRoom(string name)
+        public bool RemoveRoom(string name)
         {
             RoomItem ri = RoomItemDatabase.RoomItems.Find(name);
             if (caller != null && ri != null)
             {
-                UserRoomDatabase.User_Room.Remove(UserRoomDatabase.User_Room.First(x => x.UserId == caller.Username && x.RoomId == name));
+                UserRoomDatabase.UserRoomItems.Remove(UserRoomDatabase.UserRoomItems.First(x => x.UserId == caller.Username && x.RoomId == ri.Name));
                 UserRoomDatabase.SaveChanges();
+
+                if (UserRoomDatabase.UserRoomItems.FirstOrDefault(x => x.RoomId == ri.Name) == null) {
+                    RoomItemDatabase.RoomItems.Remove(ri);
+                    RoomItemDatabase.SaveChanges();
+                }
+                return true;
             }
+            return false;
         }
 
-        public void RemoveFriend(string friend)
+        public bool RemoveFriend(string friend)
         {
             OwnerUserItem friend_oui = OwnerUserItemDatabase.OwnerUserItems.Find(friend);
 
@@ -227,7 +234,9 @@ namespace WPChatServer.Hubs
             {
                 caller.Friends.Remove(friend_oui);
                 OwnerUserItemDatabase.SaveChanges();
+                return true;
             }
+            return false;
         }
 
 
@@ -237,7 +246,7 @@ namespace WPChatServer.Hubs
 
             RoomItemDatabase.RoomItems.ToList().ForEach(x =>
             {
-                if (x.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase) && UserRoomDatabase.User_Room.FirstOrDefault(y => y.UserId == caller.Username && y.RoomId == x.Name) == null)
+                if (x.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase) && UserRoomDatabase.UserRoomItems.FirstOrDefault(y => y.UserId == caller.Username && y.RoomId == x.Name) == null)
                 {
                     tmp_rooms.Add(new RoomItem()
                     {
@@ -273,7 +282,7 @@ namespace WPChatServer.Hubs
 
             List<object> users = new List<object>();
 
-            foreach (string userName in UserRoomDatabase.User_Room.Where(x => x.RoomId == room.Name && caller.Username != x.UserId).Select(x => x.UserId))
+            foreach (string userName in UserRoomDatabase.UserRoomItems.Where(x => x.RoomId == room.Name && caller.Username != x.UserId).Select(x => x.UserId))
             {
                 users.Add(new
                 {
@@ -285,7 +294,7 @@ namespace WPChatServer.Hubs
             {
                 Name = room.Name,
                 Users = users,
-                Messages = MessageItemDatabase.MessageItems.Where(x => x.From == room.Name || x.To == room.Name)
+                Messages = MessageItemDatabase.MessageItems.Where(x => (x.From == room.Name || x.To == room.Name) && x.Type == Models.DataContextType.Room)
             };
         }
 
@@ -295,7 +304,7 @@ namespace WPChatServer.Hubs
 
             List<object> rooms = new List<object>();
 
-            foreach (string roomName in UserRoomDatabase.User_Room.Where(x => x.UserId == user.Username).Select(x => x.RoomId))
+            foreach (string roomName in UserRoomDatabase.UserRoomItems.Where(x => x.UserId == user.Username).Select(x => x.RoomId))
             {
                 rooms.Add(new
                 {
@@ -308,7 +317,7 @@ namespace WPChatServer.Hubs
                 Username = user.Username,
                 Status = user.Status,
                 Rooms = rooms,
-                Messages = MessageItemDatabase.MessageItems.Where(x => x.From == user.Username || x.To == user.Username)
+                Messages = MessageItemDatabase.MessageItems.Where(x => (x.From == user.Username || x.To == user.Username) && x.Type == Models.DataContextType.User)
             };
         }
     }

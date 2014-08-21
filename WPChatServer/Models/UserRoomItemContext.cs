@@ -7,7 +7,7 @@ using WPChatServer.Models;
 
 namespace WPChatServer.Models
 {
-    public class UserRoomContext : DbContext
+    public class UserRoomItemContext : DbContext
     {
         // You can add custom code to this file. Changes will not be overwritten.
         // 
@@ -16,11 +16,11 @@ namespace WPChatServer.Models
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
     
-        public UserRoomContext() : base("name=UserRoomContext")
+        public UserRoomItemContext() : base("name=UserRoomItemContext")
         {
         }
 
-        public System.Data.Entity.DbSet<WPChatServer.Models.UserRoomItem> User_Room { get; set; }
+        public System.Data.Entity.DbSet<WPChatServer.Models.UserRoomItem> UserRoomItems { get; set; }
     
     }
 }

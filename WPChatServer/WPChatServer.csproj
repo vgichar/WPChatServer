@@ -221,7 +221,7 @@
     <Compile Include="Models\RoomItem.cs" />
     <Compile Include="Models\RoomItemContext.cs" />
     <Compile Include="Models\StatusIndicator.cs" />
-    <Compile Include="Models\UserRoomContext.cs" />
+    <Compile Include="Models\UserRoomItemContext.cs" />
     <Compile Include="Models\UserRoomItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartUp.cs" />

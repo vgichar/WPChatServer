@@ -2,117 +2,103 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Web;
-using System.Web.Mvc;
+using System.Net.Http;
+using System.Web.Http;
+using System.Web.Http.Description;
 using WPChatServer.Models;
 
 namespace WPChatServer.Controllers
 {
-    public class UserRoomItemController : Controller
+    public class UserRoomItemController : ApiController
     {
-        private UserRoomContext db = new UserRoomContext();
+        private UserRoomItemContext db = new UserRoomItemContext();
 
-        // GET: User_Room
-        public ActionResult Index()
+        // GET: api/UserRoomItem
+        public IQueryable<UserRoomItem> GetUserRoomItems()
         {
-            return View(db.User_Room.ToList());
+            return db.UserRoomItems;
         }
 
-        // GET: User_Room/Details/5
-        public ActionResult Details(int? id)
+        // GET: api/UserRoomItem/5
+        [ResponseType(typeof(UserRoomItem))]
+        public IHttpActionResult GetUserRoomItem(int id)
         {
-            if (id == null)
+            UserRoomItem userRoomItem = db.UserRoomItems.Find(id);
+            if (userRoomItem == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return NotFound();
             }
-            UserRoomItem user_Room = db.User_Room.Find(id);
-            if (user_Room == null)
+
+            return Ok(userRoomItem);
+        }
+
+        // PUT: api/UserRoomItem/5
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutUserRoomItem(int id, UserRoomItem userRoomItem)
+        {
+            if (!ModelState.IsValid)
             {
-                return HttpNotFound();
+                return BadRequest(ModelState);
             }
-            return View(user_Room);
-        }
 
-        // GET: User_Room/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: User_Room/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id")] UserRoomItem user_Room)
-        {
-            if (ModelState.IsValid)
+            if (id != userRoomItem.Id)
             {
-                db.User_Room.Add(user_Room);
+                return BadRequest();
+            }
+
+            db.Entry(userRoomItem).State = EntityState.Modified;
+
+            try
+            {
                 db.SaveChanges();
-                return RedirectToAction("Index");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserRoomItemExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
-            return View(user_Room);
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // GET: User_Room/Edit/5
-        public ActionResult Edit(int? id)
+        // POST: api/UserRoomItem
+        [ResponseType(typeof(UserRoomItem))]
+        public IHttpActionResult PostUserRoomItem(UserRoomItem userRoomItem)
         {
-            if (id == null)
+            if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest(ModelState);
             }
-            UserRoomItem user_Room = db.User_Room.Find(id);
-            if (user_Room == null)
-            {
-                return HttpNotFound();
-            }
-            return View(user_Room);
-        }
 
-        // POST: User_Room/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id")] UserRoomItem user_Room)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(user_Room).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(user_Room);
-        }
-
-        // GET: User_Room/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            UserRoomItem user_Room = db.User_Room.Find(id);
-            if (user_Room == null)
-            {
-                return HttpNotFound();
-            }
-            return View(user_Room);
-        }
-
-        // POST: User_Room/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            UserRoomItem user_Room = db.User_Room.Find(id);
-            db.User_Room.Remove(user_Room);
+            db.UserRoomItems.Add(userRoomItem);
             db.SaveChanges();
-            return RedirectToAction("Index");
+
+            return CreatedAtRoute("DefaultApi", new { id = userRoomItem.Id }, userRoomItem);
+        }
+
+        // DELETE: api/UserRoomItem/5
+        [ResponseType(typeof(UserRoomItem))]
+        public IHttpActionResult DeleteUserRoomItem(int id)
+        {
+            UserRoomItem userRoomItem = db.UserRoomItems.Find(id);
+            if (userRoomItem == null)
+            {
+                return NotFound();
+            }
+
+            db.UserRoomItems.Remove(userRoomItem);
+            db.SaveChanges();
+
+            return Ok(userRoomItem);
         }
 
         protected override void Dispose(bool disposing)
@@ -122,6 +108,11 @@ namespace WPChatServer.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private bool UserRoomItemExists(int id)
+        {
+            return db.UserRoomItems.Count(e => e.Id == id) > 0;
         }
     }
 }

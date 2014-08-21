@@ -29,7 +29,7 @@ namespace WPChatServer
             Database.SetInitializer(new Initializer<OwnerUserItemContext>());
             Database.SetInitializer(new Initializer<RoomItemContext>());
             Database.SetInitializer(new Initializer<MessageItemContext>());
-            Database.SetInitializer(new Initializer<UserRoomContext>());
+            Database.SetInitializer(new Initializer<UserRoomItemContext>());
         }
     }
 }
