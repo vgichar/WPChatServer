@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
-using WPChatServer.Models;
 
 namespace WPChatServer.Models
 {
-    public class UserRoomItemContext : DbContext
+    public class FriendRequestContext : DbContext
     {
         // You can add custom code to this file. Changes will not be overwritten.
         // 
@@ -16,10 +15,11 @@ namespace WPChatServer.Models
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
     
-        public UserRoomItemContext() : base("name=UserRoomItemContext")
+        public FriendRequestContext() : base("name=FriendRequestContext")
         {
         }
 
-        public System.Data.Entity.DbSet<WPChatServer.Models.UserRoomItem> UserRoomItems { get; set; }    
+        public System.Data.Entity.DbSet<WPChatServer.Models.FriendRequest> FriendRequests { get; set; }
+    
     }
 }
