@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
-using WPChatServer.Models;
 
 namespace WPChatServer.Hubs
 {
@@ -96,7 +95,7 @@ namespace WPChatServer.Hubs
                 Friends = friends
             };
         }
-
+        
         public bool Logout()
         {
             if (caller == null)
@@ -320,5 +319,30 @@ namespace WPChatServer.Hubs
                 Messages = MessageItemDatabase.MessageItems.Where(x => (x.From == user.Username || x.To == user.Username) && x.Type == Models.DataContextType.User)
             };
         }
+
+        public void FriendRequest(string from, string username)
+        {
+            /* the actual code
+            OwnerUserItem receiverUser = OwnerUserItemDatabase.OwnerUserItems.Find(username);
+            if (receiverUser.IsLoggedIn)
+            {
+                Debugger.Log(1, "request", username);
+                Clients.Client(receiverUser.ConnectionId).FriendRequestRecieve(from);
+            }
+            */
+            //mock
+            OwnerUserItem receiverUser = OwnerUserItemDatabase.OwnerUserItems.Find(from);
+            if (receiverUser.IsLoggedIn)
+            {
+            Debugger.Log(1, "request", "asd");
+                Clients.Client(receiverUser.ConnectionId).FriendRequestRecieve(from);
+            }
+        }
+
+        public void FriendAccept(string from, string username)
+        {
+            
+        }
+
     }
 }
