@@ -149,7 +149,7 @@ namespace WPChatServer.Hubs
                 friends.Add(GetUserByName(userName));
             }
 
-            foreach (string userName in FriendRequestDatabase.FriendRequests.Where(x=>x.UserReceiverName == username).Select(x=>x.UserSenderName))
+            foreach (string userName in FriendRequestDatabase.FriendRequests.Where(x => x.UserReceiverName == username).Select(x => x.UserSenderName))
             {
                 friendRequests.Add(userName);
             }
@@ -386,17 +386,17 @@ namespace WPChatServer.Hubs
             };
         }
 
-        public void SendFriendRequest(string fromUsername, string toUsername)
+        public void SendFriendRequest(string toUsername)
         {
             OwnerUserItem sender = caller;
             OwnerUserItem receiver = OwnerUserItemDatabase.OwnerUserItems.Find(toUsername);
 
-            if (sender != null && receiver != null && sender != receiver && sender.Friends.FirstOrDefault(x=> x.Username==receiver.Username)==null)
+            if (sender != null && receiver != null && sender != receiver && sender.Friends.FirstOrDefault(x => x.Username == receiver.Username) == null && FriendRequestDatabase.FriendRequests.FirstOrDefault(x=>x.UserSenderName == sender.Username && x.UserReceiverName == receiver.Username) == null)
             {
                 FriendRequestDatabase.FriendRequests.Add(new FriendRequest()
                 {
-                    UserSenderName = fromUsername,
-                    UserReceiverName = toUsername
+                    UserSenderName = sender.Username,
+                    UserReceiverName = receiver.Username
                 });
 
                 FriendRequestDatabase.SaveChanges();
@@ -408,12 +408,12 @@ namespace WPChatServer.Hubs
             }
         }
 
-        public void AcceptFriendRequest(string fromUsername, string toUsername)
+        public void AcceptFriendRequest(string fromUsername)
         {
             OwnerUserItem sender = OwnerUserItemDatabase.OwnerUserItems.Find(fromUsername);
             OwnerUserItem receiver = caller;
 
-            FriendRequest fr = FriendRequestDatabase.FriendRequests.FirstOrDefault(x => x.UserSenderName == fromUsername && x.UserReceiverName == toUsername);
+            FriendRequest fr = FriendRequestDatabase.FriendRequests.FirstOrDefault(x => x.UserSenderName == fromUsername && x.UserReceiverName == receiver.Username);
 
             if (sender != null && receiver != null && sender != receiver && fr != null)
             {
@@ -429,12 +429,12 @@ namespace WPChatServer.Hubs
             }
         }
 
-        public void DenyFriendRequest(string fromUsername, string toUsername)
+        public void DenyFriendRequest(string fromUsername)
         {
             OwnerUserItem sender = OwnerUserItemDatabase.OwnerUserItems.Find(fromUsername);
             OwnerUserItem receiver = caller;
 
-            FriendRequest fr = FriendRequestDatabase.FriendRequests.FirstOrDefault(x => x.UserSenderName == fromUsername && x.UserReceiverName == toUsername);
+            FriendRequest fr = FriendRequestDatabase.FriendRequests.FirstOrDefault(x => x.UserSenderName == fromUsername && x.UserReceiverName == receiver.Username);
 
             if (sender != null && receiver != null && sender != receiver && fr != null)
             {
