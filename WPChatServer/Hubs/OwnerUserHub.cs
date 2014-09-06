@@ -40,18 +40,21 @@ namespace WPChatServer.Hubs
 
         private void NotifyFriendRequestReceived(OwnerUserItem receiver)
         {
-            Clients.Client(receiver.ConnectionId).FriendRequestReceived(caller);
+            if (receiver.IsLoggedIn)
+            {
+                Clients.Client(receiver.ConnectionId).FriendRequestReceived(caller.Username);
+            }
         }
 
         private void NotifyFriendRequestAccepted(OwnerUserItem sender)
         {
             if (sender.IsLoggedIn)
             {
-                Clients.Client(sender.ConnectionId).FriendRequestAccepted(caller);
+                Clients.Client(sender.ConnectionId).FriendRequestAccepted(GetUserByName(caller.Username));
             }
             if (caller.IsLoggedIn)
             {
-                Clients.Client(caller.ConnectionId).FriendRequestAccepted(sender);
+                Clients.Client(caller.ConnectionId).FriendRequestAccepted(GetUserByName(sender.Username));
             }
         }
 
@@ -63,7 +66,7 @@ namespace WPChatServer.Hubs
 
                 if (member != null && member.IsLoggedIn)
                 {
-                    Clients.Client(member.ConnectionId).NewMemberInRoom(caller);
+                    Clients.Client(member.ConnectionId).NewMemberInRoom(caller.Username, room.Name);
                 }
             }
 
@@ -71,7 +74,7 @@ namespace WPChatServer.Hubs
             {
                 if (friend.IsLoggedIn)
                 {
-                    Clients.Client(friend.ConnectionId).FriendJoinRoom(caller);
+                    Clients.Client(friend.ConnectionId).FriendJoinRoom(caller.Username, room.Name);
                 }
             }
         }
@@ -84,7 +87,7 @@ namespace WPChatServer.Hubs
 
                 if (member != null && member.IsLoggedIn)
                 {
-                    Clients.Client(member.ConnectionId).RemoveMemberFromRoom(caller);
+                    Clients.Client(member.ConnectionId).RemoveMemberFromRoom(caller.Username, room.Name);
                 }
             }
 
@@ -92,7 +95,7 @@ namespace WPChatServer.Hubs
             {
                 if (friend.IsLoggedIn)
                 {
-                    Clients.Client(friend.ConnectionId).FriendLeaveRoom(caller);
+                    Clients.Client(friend.ConnectionId).FriendLeaveRoom(caller.Username, room.Name);
                 }
             }
         }
@@ -101,14 +104,14 @@ namespace WPChatServer.Hubs
 
         public bool Register(string username, string password)
         {
-            if (OwnerUserItemDatabase.OwnerUserItems.Find(username) == null)
+            if (OwnerUserItemDatabase.OwnerUserItems.Find(username) == null && RoomItemDatabase.RoomItems.Find(username) == null)
             {
                 OwnerUserItemDatabase.OwnerUserItems.Add(new OwnerUserItem()
                 {
                     Username = username,
                     Password = password,
                     IsLoggedIn = false,
-                    Status = StatusIndicator.Offline,
+                    Status = StatusIndicator.Online,
                     Friends = new List<OwnerUserItem>(),
                     ConnectionId = this.Context.ConnectionId
                 });
@@ -134,6 +137,7 @@ namespace WPChatServer.Hubs
 
             List<object> rooms = new List<object>();
             List<object> friends = new List<object>();
+            List<string> friendRequests = new List<string>();
 
             foreach (string roomName in UserRoomDatabase.UserRoomItems.Where(x => x.UserId == oui.Username).Select(x => x.RoomId))
             {
@@ -145,6 +149,11 @@ namespace WPChatServer.Hubs
                 friends.Add(GetUserByName(userName));
             }
 
+            foreach (string userName in FriendRequestDatabase.FriendRequests.Where(x=>x.UserReceiverName == username).Select(x=>x.UserSenderName))
+            {
+                friendRequests.Add(userName);
+            }
+
             return new
             {
                 Username = oui.Username,
@@ -152,7 +161,8 @@ namespace WPChatServer.Hubs
                 IsLoggedIn = oui.IsLoggedIn,
                 Status = oui.Status,
                 Rooms = rooms,
-                Friends = friends
+                Friends = friends,
+                FriendRequests = friendRequests
             };
         }
 
@@ -171,21 +181,23 @@ namespace WPChatServer.Hubs
             return true;
         }
 
-        public void ChangeStatus(StatusIndicator status)
+        public bool ChangeStatus(StatusIndicator status)
         {
             if (caller != null)
             {
                 caller.Status = status;
 
                 this.NotifyFriendStatusChanged(status);
-
                 OwnerUserItemDatabase.SaveChanges();
+
+                return true;
             }
+            return false;
         }
 
         public bool CreateRoom(string name)
         {
-            if (caller != null && RoomItemDatabase.RoomItems.Find(name) == null)
+            if (caller != null && OwnerUserItemDatabase.OwnerUserItems.Find(name) == null && RoomItemDatabase.RoomItems.Find(name) == null)
             {
 
                 RoomItem ri = new RoomItem()
@@ -374,25 +386,9 @@ namespace WPChatServer.Hubs
             };
         }
 
-        public void FriendRequest(string fromUsername, string toUsername)
+        public void SendFriendRequest(string fromUsername, string toUsername)
         {
-            /* the actual code
-            OwnerUserItem receiverUser = OwnerUserItemDatabase.OwnerUserItems.Find(username);
-            if (receiverUser.IsLoggedIn)
-            {
-                Debugger.Log(1, "request", username);
-                Clients.Client(receiverUser.ConnectionId).FriendRequestRecieve(from);
-            }
-            */
-            //mock
-            //OwnerUserItem receiverUser = OwnerUserItemDatabase.OwnerUserItems.Find(from);
-            //if (receiverUser.IsLoggedIn)
-            //{
-            //Debugger.Log(1, "request", "asd");
-            //    Clients.Client(receiverUser.ConnectionId).FriendRequestRecieve(from);
-            //}
-
-            OwnerUserItem sender = OwnerUserItemDatabase.OwnerUserItems.Find(fromUsername);
+            OwnerUserItem sender = caller;
             OwnerUserItem receiver = OwnerUserItemDatabase.OwnerUserItems.Find(toUsername);
 
             if (sender != null && receiver != null && sender != receiver && sender.Friends.FirstOrDefault(x=> x.Username==receiver.Username)==null)
@@ -415,7 +411,7 @@ namespace WPChatServer.Hubs
         public void AcceptFriendRequest(string fromUsername, string toUsername)
         {
             OwnerUserItem sender = OwnerUserItemDatabase.OwnerUserItems.Find(fromUsername);
-            OwnerUserItem receiver = OwnerUserItemDatabase.OwnerUserItems.Find(toUsername);
+            OwnerUserItem receiver = caller;
 
             FriendRequest fr = FriendRequestDatabase.FriendRequests.FirstOrDefault(x => x.UserSenderName == fromUsername && x.UserReceiverName == toUsername);
 
@@ -436,7 +432,7 @@ namespace WPChatServer.Hubs
         public void DenyFriendRequest(string fromUsername, string toUsername)
         {
             OwnerUserItem sender = OwnerUserItemDatabase.OwnerUserItems.Find(fromUsername);
-            OwnerUserItem receiver = OwnerUserItemDatabase.OwnerUserItems.Find(toUsername);
+            OwnerUserItem receiver = caller;
 
             FriendRequest fr = FriendRequestDatabase.FriendRequests.FirstOrDefault(x => x.UserSenderName == fromUsername && x.UserReceiverName == toUsername);
 
