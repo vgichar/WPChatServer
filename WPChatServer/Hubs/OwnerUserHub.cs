@@ -385,7 +385,7 @@ namespace WPChatServer.Hubs
             return new
             {
                 Username = user.Username,
-                Status = user.Status,
+                Status = user.IsLoggedIn?user.Status:StatusIndicator.Offline,
                 Rooms = rooms,
                 Messages = MessageItemDatabase.MessageItems.Where(x => (x.From == user.Username || x.To == user.Username) && x.Type == Models.DataContextType.User)
             };
