@@ -215,6 +215,8 @@ namespace WPChatServer.Hubs
                 });
                 UserRoomDatabase.SaveChanges();
 
+                NotifyAddRoom(ri);
+
                 return true;
             }
             return false;
@@ -255,7 +257,7 @@ namespace WPChatServer.Hubs
             MessageItemDatabase.SaveChanges();
         }
 
-        public void AddRoom(string name)
+        public object AddRoom(string name)
         {
             RoomItem ri = RoomItemDatabase.RoomItems.Find(name);
             if (caller != null && ri != null)
@@ -268,7 +270,10 @@ namespace WPChatServer.Hubs
                 UserRoomDatabase.SaveChanges();
 
                 NotifyAddRoom(ri);
+
+                return GetRoomByName(name);
             }
+            return null;
         }
 
         public bool RemoveRoom(string name)

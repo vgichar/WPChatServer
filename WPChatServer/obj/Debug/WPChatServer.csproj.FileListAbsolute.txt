@@ -507,5 +507,6 @@ C:\Users\Vojdan\Documents\Visual Studio 2013\Projects\WPChatServer\WPChatServer\
 C:\Users\Vojdan\Documents\Visual Studio 2013\Projects\WPChatServer\WPChatServer\bin\ru\System.Spatial.resources.dll
 C:\Users\Vojdan\Documents\Visual Studio 2013\Projects\WPChatServer\WPChatServer\bin\zh-Hans\System.Spatial.resources.dll
 C:\Users\Vojdan\Documents\Visual Studio 2013\Projects\WPChatServer\WPChatServer\bin\zh-Hant\System.Spatial.resources.dll
+C:\Users\Vojdan\Documents\Visual Studio 2013\Projects\WPChatServer\WPChatServer\obj\Debug\WPChatServer.csprojResolveAssemblyReference.cache
 C:\Users\Vojdan\Documents\Visual Studio 2013\Projects\WPChatServer\WPChatServer\obj\Debug\WPChatServer.dll
 C:\Users\Vojdan\Documents\Visual Studio 2013\Projects\WPChatServer\WPChatServer\obj\Debug\WPChatServer.pdb
